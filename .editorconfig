@@ -1,0 +1,12 @@
+# This is the top-most .editorconfig file
+root = true
+
+# Apply the following rule-set to all directories and files
+[*]
+end_of_line = lf # Windows uses CRLF (carriage return, line feed) while *NIX uses LF
+insert_final_newline = true # Always a good practice to explictly tell EOF
+charset = utf-8 # Just to make sure that we have the correct character set
+indent_style = space # Some editors use tabs for indentation. We are using spaces
+indent_size = 4 # 4 spaces of indent
+trim_trailing_whitespace = true
+max_line_length = 80
