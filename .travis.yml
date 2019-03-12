@@ -6,6 +6,9 @@ node_js:
   - "10"
   - "11"
   - stable
+before_script:
+  - rm package-lock.json # Man, I hate npm for this.
+  - npm i -S express jsonwebtoken
 script:
   - npm test
 branches:
