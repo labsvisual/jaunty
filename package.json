@@ -12,7 +12,8 @@
         "test:integration": "NODE_ENV=test tape '__tests__/integration/**/*.specs.js' | tap-spec",
         "pretest": "xo",
         "test": "npm run test:unit && npm run test:integration",
-        "changelog": "auto-changelog -p"
+        "changelog": "auto-changelog -p",
+        "postchangelog": "git add CHANGELOG.md && git commit -m \"chore(changelog): update the changelog\""
     },
     "repository": {
         "type": "git",
