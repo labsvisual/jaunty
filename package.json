@@ -1,6 +1,6 @@
 {
     "name": "jaunty",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "A simple, all-in-one, lightweight JWT authentication and authorization middleware for express.",
     "main": "lib/index.js",
     "files": [
@@ -8,10 +8,12 @@
     ],
     "scripts": {
         "test:unit": "NODE_ENV=test nyc tape '__tests__/unit/**/*.specs.js' | tap-nyc",
+        "pretest:integration": "npm install express jsonwebtoken",
         "test:integration": "NODE_ENV=test tape '__tests__/integration/**/*.specs.js' | tap-spec",
         "pretest": "xo",
         "test": "npm run test:unit && npm run test:integration",
-        "changelog": "auto-changelog -p"
+        "changelog": "auto-changelog -p",
+        "postchangelog": "git add CHANGELOG.md && git commit -m \"chore(changelog): update the changelog\""
     },
     "repository": {
         "type": "git",

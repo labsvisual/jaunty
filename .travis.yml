@@ -8,3 +8,7 @@ node_js:
   - stable
 script:
   - npm test
+branches:
+  only:
+  - master
+  - /^feature\/.{3,}$/
