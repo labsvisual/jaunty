@@ -52,7 +52,7 @@ test( '#NormalizeOptions > correctly normalizes the options', t => {
         attachments: {
             request: 'user'
         },
-        authorizationRequired: true
+        ignoreAuthentication: new Set()
     };
 
     t.deepEqual( Utils.normalizeOptions( 'abc' ), expectation,

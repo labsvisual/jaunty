@@ -10,7 +10,8 @@
         "test:unit": "NODE_ENV=test nyc tape '__tests__/unit/**/*.specs.js' | tap-nyc",
         "test:integration": "NODE_ENV=test tape '__tests__/integration/**/*.specs.js' | tap-spec",
         "pretest": "xo",
-        "test": "npm run test:unit && npm run test:integration"
+        "test": "npm run test:unit && npm run test:integration",
+        "changelog": "auto-changelog -p"
     },
     "repository": {
         "type": "git",
@@ -83,9 +84,5 @@
     "peerDependencies": {
         "jsonwebtoken": "^8.5.0",
         "express": "^4.0.0"
-    },
-    "dependencies": {
-        "express": "^4.16.4",
-        "jsonwebtoken": "^8.5.0"
     }
 }

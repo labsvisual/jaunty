@@ -67,19 +67,19 @@ test( '#Core > When no headers are provided, throws an error', t => {
 
 } );
 
-test( '#Core > When no headers are provided but authorizationRequired = false no errors', t => {
+test( '#Core > Without headers, if the URL is in the ignored set, no errors are thrown', t => {
 
-    let request = { method: 'POST' };
+    let request = { method: 'POST', originalUrl: '/' };
     const next = sinon.spy();
 
     const customJaunty = Jaunty.createInstance( {
         signingSecret: SIGNING_SECRET,
-        authorizationRequired: false
+        ignoreAuthentication: new Set( [ '/' ] )
     } );
 
     customJaunty( request, null, next );
 
-    request = { method: 'POST', headers: {} };
+    request = { method: 'POST', headers: {}, originalUrl: '/' };
     customJaunty( request, null, next );
 
     t.notOk( next.getCall( 0 ).args[ 0 ], 'does not throw an error' );
@@ -121,22 +121,22 @@ test( '#Core > Throws an error when incorrect scheme is provided', t => {
 
 } );
 
-test( '#Core > Does not throw an error when authorizationRequired is false', t => {
+test( '#Core > Does not throw an error when URL is in the ignored set', t => {
 
     const customJaunty = Jaunty.createInstance( {
         signingSecret: SIGNING_SECRET,
-        authorizationRequired: false
+        ignoreAuthentication: new Set( [ '/' ] )
     } );
 
-    let request = { method: 'POST', headers: { authorization: '' } };
+    let request = { method: 'POST', headers: { authorization: '' }, originalUrl: '/' };
     const next = sinon.spy();
 
     customJaunty( request, null, next );
 
-    request = { method: 'POST', headers: { authorization: 'Something ' } };
+    request = { method: 'POST', headers: { authorization: 'Something ' }, originalUrl: '/' };
     customJaunty( request, null, next );
 
-    request = { method: 'POST', headers: { authorization: 'Bread something' } };
+    request = { method: 'POST', headers: { authorization: 'Bread something' }, originalUrl: '/' };
     customJaunty( request, null, next );
 
     t.notOk( next.getCall( 0 ).args[ 0 ], 'does not throw an error' );
@@ -392,6 +392,66 @@ test( '#Core > Sets the correct payload on successful validation [cb]', async t 
 
         t.deepEqual( request.user, {
             name: 'John Doe'
+        }, 'the user is correctly deserialized' );
+
+    } catch ( error ) {}
+
+} );
+
+test( '#Core > Sets the default payload on successful validation [cb]', async t => {
+
+    t.plan( 1 );
+
+    const customJaunty = Jaunty.createInstance( {
+        signingSecret: SIGNING_SECRET,
+        validate( _, cb ) {
+
+            cb( null, { isValid: true } );
+
+        }
+    } );
+
+    const request = { method: 'POST', headers: { authorization: 'Bearer ' + GOOD_TOKEN } };
+    const next = sinon.spy();
+
+    try {
+
+        await customJaunty( request, null, next );
+
+        t.deepEqual( request.user, {
+            aud: '[\'user\']',
+            name: 'John Doe',
+            iat: 1516239022
+        }, 'the user is correctly deserialized' );
+
+    } catch ( error ) {}
+
+} );
+
+test( '#Core > Sets the default payload on successful validation [Promise]', async t => {
+
+    t.plan( 1 );
+
+    const customJaunty = Jaunty.createInstance( {
+        signingSecret: SIGNING_SECRET,
+        validate() {
+
+            return Promise.resolve( { isValid: true } );
+
+        }
+    } );
+
+    const request = { method: 'POST', headers: { authorization: 'Bearer ' + GOOD_TOKEN } };
+    const next = sinon.spy();
+
+    try {
+
+        await customJaunty( request, null, next );
+
+        t.deepEqual( request.user, {
+            aud: '[\'user\']',
+            name: 'John Doe',
+            iat: 1516239022
         }, 'the user is correctly deserialized' );
 
     } catch ( error ) {}
