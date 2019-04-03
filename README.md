@@ -23,7 +23,7 @@ Jaunty has only **one** required parameter and the rest of them are just augment
 
 'Bear' in mind that you need to install `jsonwebtoken` and `express` for this to work properly. They are listed, in the `package.json` file, as `peerDependencies`.
 
-## Usage
+## Usage - Jaunty JWT Verification
 The `jaunty` middleware helps you automatically parse, validate and deserialize [JSON Web Tokens](http://jwt.io). If you don't know what they are and how they work, I'd suggest you give the above link a read and come back.
 
 In its simplest form, you can use `jaunty` like this:
@@ -59,7 +59,7 @@ The `.createInstance( opts: Object )` method takes an options argument with the 
     - `request` (`String`) [`user`] - The name of the property on the `request` object which will contain the decoded and deserialized payload.
     - `response` (`String`) [`null`] - Similarly, the name of the propery on the `response` object.
 
-## Handling `Jaunty` Errors
+### Handling `Jaunty` Errors
 `Jaunty` exposes a common base error type called `AuthorizationError` which acts as the base class for all the errors emitted by `Jaunty`. Following are the errors emitted by `Jaunty` at various points in time:
   - `BadSchemeError` - this error is thrown by `Jaunty` when, for a required route, no `Authorization` header is provided or when the header is not in the form of `Authorization: Bearer <Token>`.
   - `BadTokenError` - thrown when the JWT token is malformed and/or can not be parsed.
@@ -115,6 +115,62 @@ app.use( function baseErrorHandler( err, req, res, next ) {
 ```
 
 Take note of the two things we are doing here and their order; the first construct checks _specifically_ for `UnauthorizedError` whilst the second one catches **everything else**. Make sure that the block to check for specific errors is **always at the last** to avoid confusion.
+
+## Usage - Jaunty ACL
+With release `1.1.0`, Jaunty comes with its own ACL (Access Control List) module which is, much like Jaunty, super-simple to use. To get started with the ACL, you can do something like the following:
+
+```javascript
+const Jaunty = require( 'jaunty' );
+const aclProvider = Jaunty.createACL();
+
+// Use the Jaunty to verify JWTs at a router/application level.
+app.use( Jaunty.createInstance( {
+    signingSecret: 'WHAT_EVER_STRING',
+    ignoreAuthentication: new Set( [ '/login' ] )
+} ) );
+
+// Now you can use the ACL like so:
+// Per route level
+app.get( '/', aclProvider.hasPermissions( 'user:write' ), function handleGet() { ... } );
+
+// Per router level
+const adminRouter = express.Router();
+
+adminRouter.use( aclProvider.hasPermissions( 'admin' ) );
+adminRouter.get( ... );
+
+app.use( '/admin', adminRouter );
+```
+
+### Options
+The `.createACL()` function takes an object as its options. There are just two properties on the options object:
+
+- `attachmentPath` (`String`) [`user`] - This is the path to the User's object on `express`'s `request`.
+- `permissionsPath` (`String`) [`permissions`] - This is the path to the permissions property **on the `User` object**.
+
+With the defaults, `permissions` is at `request.user.permissions`. I hope this makes sense.
+
+After you execute `createACL()`, an `object` is returned which contains just one function (yet again) called `hasPermissions([permissions])`. This `hasPermissions()` functions is responsible for ultimately compiling and spitting out the middleware which validates the routes for permissions.
+
+You have a couple of ways in which you can specify permissions to the `hasPermissions()` function.
+
+- `hasPermissions( 'permission1', 'permission2' )` - this translates to: make sure the user has `permission1` **and** `permission2`;
+- `hasPermissions( [ 'permission1' ], [ 'permission2', 'permission3' ] )` - this translates to: make sure the user has **either** `permission1` **or** `permission2` **and** `permission3`.
+
+Similarly, your `permissions` object on the user can be either **an array of string** or a **space separated OAuth style scope**. Which is uber-jargon to say:
+
+```javascript
+
+// Type one
+const user = {
+    permissions: [ 'read', 'write' ]
+};
+
+// Type two
+const user = {
+    permissions: 'admin:read admin:write'
+};
+```
 
 ## Examples
 
