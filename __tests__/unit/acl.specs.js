@@ -163,7 +163,7 @@ test( '#ACL > checks if permissions are acceptable for type string', t => {
     acl.hasPermissions( [ 'user:read' ] )( request, null, next );
 
     t.ok( next.calledOnce, 'next is called' );
-    t.ok( next.getCall( 0 ).args[ 0 ] === null, 'next is called without any arguments' );
+    t.ok( typeof next.getCall( 0 ).args[ 0 ] === 'undefined', 'next is called without any arguments' );
 
     t.end();
 
@@ -178,7 +178,7 @@ test( '#ACL > checks if permissions are acceptable for type array', t => {
     acl.hasPermissions( [ 'user:read' ] )( request, null, next );
 
     t.ok( next.calledOnce, 'next is called' );
-    t.ok( next.getCall( 0 ).args[ 0 ] === null, 'next is called without any arguments' );
+    t.ok( typeof next.getCall( 0 ).args[ 0 ] === 'undefined', 'next is called without any arguments' );
 
     t.end();
 
@@ -193,7 +193,7 @@ test( '#ACL > checks if multiple permissions are required', t => {
     acl.hasPermissions( [ 'user:read', 'user:write' ] )( request, null, next );
 
     t.ok( next.calledOnce, 'next is called' );
-    t.ok( next.getCall( 0 ).args[ 0 ] === null, 'next is called without any arguments' );
+    t.ok( typeof next.getCall( 0 ).args[ 0 ] === 'undefined', 'next is called without any arguments' );
 
     t.end();
 
@@ -208,7 +208,7 @@ test( '#ACL > checks if multiple permissions are required from a given set', t =
     acl.hasPermissions( [ 'user:read', 'user:write' ], [ 'admin' ] )( request, null, next );
 
     t.ok( next.calledOnce, 'next is called' );
-    t.ok( next.getCall( 0 ).args[ 0 ] === null, 'next is called without any arguments' );
+    t.ok( typeof next.getCall( 0 ).args[ 0 ] === 'undefined', 'next is called without any arguments' );
 
     next = sinon.spy();
     request = { user: { permissions: 'admin' } };
@@ -216,7 +216,7 @@ test( '#ACL > checks if multiple permissions are required from a given set', t =
     acl.hasPermissions( [ 'user:read', 'user:write' ], [ 'admin' ] )( request, null, next );
 
     t.ok( next.calledOnce, 'next is called' );
-    t.ok( next.getCall( 0 ).args[ 0 ] === null, 'next is called without any arguments' );
+    t.ok( typeof next.getCall( 0 ).args[ 0 ] === 'undefined', 'next is called without any arguments' );
 
     t.end();
 
