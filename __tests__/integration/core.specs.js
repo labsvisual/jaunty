@@ -20,9 +20,15 @@ const jwtLockPromise = Jaunty.createInstance( {
     }
 } );
 
-app.post( '/', jwtLock, ( req, res ) => res.json( req.user ) );
+app.use( jwtLock.unless( {
+    path: [ { url: '/open' }, /\/test\/*./ ]
+} ) );
+
+app.post( '/', ( req, res ) => res.json( req.user ) );
 app.post( '/open', ( _, res ) => res.json( 'Hello!' ) );
 app.post( '/promise', jwtLockPromise, ( req, res ) => res.json( req.user ) );
+app.post( '/test', ( _, res ) => res.json( 'Hello [Closed]' ) );
+app.post( '/test/:id', ( req, res ) => res.json( `Hello [${ req.params.id }]` ) );
 
 app.use( ( err, _, res, next ) => {
 
@@ -54,6 +60,47 @@ test( '#Core > open routes are accessible', async t => {
         t.ok( response.ok, 'no error was handled' );
         t.equal( response.status, 200, '200 was emitted' );
         t.equal( response.body, 'Hello!', 'correct body is sent' );
+
+        t.end();
+
+    } catch ( error ) {
+
+        throw error;
+
+    }
+
+} );
+
+test( '#Core > open routes are accessible [unless]', async t => {
+
+    try {
+
+        const response = await request.post( '/test/hello' );
+
+        t.ok( response.ok, 'no error was handled' );
+        t.equal( response.status, 200, '200 was emitted' );
+        t.equal( response.body, 'Hello [hello]', 'correct body is sent' );
+
+        t.end();
+
+    } catch ( error ) {
+
+        throw error;
+
+    }
+
+} );
+
+test( '#Core > auth is required [unless]', async t => {
+
+    try {
+
+        const response = await request.post( '/test' )
+            .set( 'authorization', 'bearer ' + GOOD_TOKEN );
+
+        t.ok( response.ok, 'no error was handled' );
+        t.equal( response.status, 200, '200 was emitted' );
+        t.equal( response.body, 'Hello [Closed]', 'correct body is sent' );
 
         t.end();
 
