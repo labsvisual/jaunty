@@ -188,9 +188,20 @@ app.use( Jaunty.createInstance( {
 
 Now, every request sent to the `/login` route will be open and not require any form of validation.
 
-There is one caveat, however, which is that `Jaunty` does not (yet) support method-route mapping. Which effectively translates to the fact that if you add `/login`, every HTTP verb will be ignored and not require authentication.
+#### Complicated Ignore Patterns
+The `ignoreAuthentication` property is good for simple rules like the ones defined above. What about parameterized paths or what about
+when you want to ignore a specific path if it matches a specific HTTP method? For that, we are using the excellent [`express-unless`](https://github.com/jfromaniello/express-unless).
 
-A fix for this will be released in the next minor version.
+Look up its documentation to read more. As a quick example, if you want to open the `/test/:id` path but keep
+`/test` closed, you can do something like the following:
+
+```javascript
+// ... other express-related stuff ...
+app.use( jwtLock.unless( {
+    path: [ /\/test\/*./ ]
+} ) );
+// ... dragons ...
+```
 
 ### Validate Sessions
 Once the cryptographic verification of the token is done, an optional callback function can be supplied which checks if the session for that token is still valid. The `validate` property provided to `Jaunty` takes the form `function( token: Object, [function (error, data)] )`. Let's see a quick example of that in actions:
