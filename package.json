@@ -1,6 +1,6 @@
 {
     "name": "jaunty",
-    "version": "1.2.1",
+    "version": "1.2.2",
     "description": "A simple, all-in-one, lightweight JWT authentication and authorization middleware for express.",
     "main": "lib/index.js",
     "files": [
