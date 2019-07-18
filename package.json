@@ -73,18 +73,18 @@
         }
     },
     "devDependencies": {
-        "auto-changelog": "^1.11.0",
-        "nyc": "^13.3.0",
-        "sinon": "^7.2.6",
-        "supertest": "^3.4.2",
+        "auto-changelog": "^1.14.1",
+        "nyc": "^14.1.1",
+        "sinon": "^7.3.2",
+        "supertest": "^4.0.2",
         "tap-nyc": "^1.0.3",
         "tap-spec": "^5.0.0",
-        "tape": "^4.10.1",
+        "tape": "^4.11.0",
         "xo": "^0.24.0"
     },
     "peerDependencies": {
-        "jsonwebtoken": "^8.5.0",
-        "express": "^4.0.0"
+        "jsonwebtoken": "^8.5.1",
+        "express": "^4.17.1"
     },
     "dependencies": {
         "express-unless": "^0.5.0"
